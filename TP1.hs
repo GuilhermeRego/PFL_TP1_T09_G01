@@ -81,13 +81,101 @@ highest ((c1, n1):(c2,n2):xs)
     | n1 == n2 = [c1] ++ [c2] ++ highest xs
     | otherwise = [c1]
 
+-- 7: A função principal que verifica se um roadmap (grafo não direcionado) é fortemente conectado.
+-- Para isso, dividimos o problema em sub-problemas e utilizamos uma abordagem de busca em profundidade (DFS).
+-- A lógica é a seguinte:
+-- 1. Primeiro, obtemos a lista de todas as cidades usando a função cities.
+-- 2. Depois, realizamos uma busca em profundidade a partir da primeira cidade da lista usando a função dfs.
+-- 3. Se a quantidade de cidades visitadas durante a busca for igual ao total de cidades no roadmap , quer dizer que todas 
+-- já foram visitadas, então o grafo é fortemente conectado, retornando True. Caso contrário, retorna False.
+isStronglyConnected :: RoadMap -> Bool
+isStronglyConnected roadMap =
+    let allCities = cities roadMap  
+        visitedCities = dfs roadMap (head allCities) []  
+    in length visitedCities == length allCities  
+
+
+-- Realiza uma busca em profundidade (DFS) nas cidades do roadmap.
+-- A função recebe um RoadMap, uma City e uma lista de cidades visitadas (visited).
+-- Se a cidade já foi visitada, retorna a lista de cidades visitadas.
+-- Caso contrário, adiciona a cidade à lista de visitados e continua à procura de cidades adjacentes.
+dfs :: RoadMap -> City -> [City] -> [City]
+dfs roadMap city visited
+    | elem city visited = visited  
+    | otherwise = foldl (\acc neighbor -> dfs roadMap neighbor acc) (city:visited) (adjacentCities roadMap city)
+
+-- Encontra cidades adjacentes a uma cidade no RoadMap.
+-- A função verifica o RoadMap e retorna uma lista de cidades adjacentes a partir da cidade dada.
+-- Para isso, utiliza uma compreensão de listas que extrai as cidades adjacentes tanto na posição de origem quanto na de destino.
+adjacentCities :: RoadMap -> City -> [City]
+adjacentCities roadMap city = [b | (a, b, _) <- roadMap, a == city] ++ [a | (a, b, _) <- roadMap, b == city]
 
 
 
 
-roadmap :: RoadMap
-roadmap = [("New York", "Los Angeles", 2445),
+
+
+
+
+rm :: RoadMap
+rm = [("New York", "Los Angeles", 2445),
                ("Chicago", "New York", 790),
                ("Houston", "Los Angeles", 1374),
                ("Chicago", "Houston", 1082),
                ("New York", "Las Vegas", 2068)]
+
+-- Exemplo de RoadMaps para testar a função isStronglyConnected
+-- Exemplo 1: Grafo com arestas duplicadas
+rm1 :: RoadMap
+rm1 = [("A", "B", 10),
+        ("B", "A", 10), -- Aresta duplicada
+        ("B", "C", 20)]
+-- Resultado esperado: True
+-- Justificação: "A" pode alcançar "B" e "B" pode alcançar "C", então o grafo é fortemente conexo.
+
+-- Exemplo 2: Grafo isolado
+rm2 :: RoadMap
+rm2 = [("A", "B", 10),
+        ("C", "D", 20)]
+-- Resultado esperado: False
+-- Justificação: "A" e "B" estão em um componente, enquanto "C" e "D" estão em outro.
+
+-- Exemplo 3: Ciclo em apenas uma direção
+rm3 :: RoadMap
+rm3 = [("A", "B", 10),
+        ("B", "C", 20),
+        ("C", "A", 30),
+        ("D", "E", 40)]
+-- Resultado esperado: False
+-- Justificação: O ciclo "A", "B", "C" não conecta com "D" e "E".
+
+-- Exemplo 4: Grafo com várias conexões
+rm4 :: RoadMap
+rm4 = [("A", "B", 10),
+        ("A", "C", 15),
+        ("C", "B", 5),
+        ("D", "E", 10)]
+-- Resultado esperado: False
+-- Justificação: "A", "B", e "C" estão em um componente, enquanto "D" e "E" estão em outro.
+
+-- Exemplo 5: Grafo com uma cidade conectada a si mesma
+rm5 :: RoadMap
+rm5 = [("A", "A", 0)]
+-- Resultado esperado: True
+-- Justificação: "A" é a única cidade e está conectada a si mesma.
+
+-- Exemplo 6: Grafo com cidade não conectada
+rm6 :: RoadMap
+rm6 = [("A", "B", 10),
+        ("C", "D", 20)]
+-- Resultado esperado: False
+-- Justificação: "A" e "B" estão conectadas, mas "C" e "D" estão em um componente separado.
+
+-- Exemplo 7: Cidade conectada a várias outras
+rm7 :: RoadMap
+rm7 = [("A", "B", 10),
+        ("A", "C", 15),
+        ("B", "C", 20),
+        ("D", "E", 25)]
+-- Resultado esperado: False
+-- Justificação: "A", "B", e "C" estão em um componente, enquanto "D" e "E" estão em outro.
