@@ -110,9 +110,26 @@ dfs roadMap city visited
 adjacentCities :: RoadMap -> City -> [City]
 adjacentCities roadMap city = [b | (a, b, _) <- roadMap, a == city] ++ [a | (a, b, _) <- roadMap, b == city]
 
+-- 8:
+shortestPath :: RoadMap -> City -> City -> [Path]
+shortestPath roadMap start end
+    | start == end = [[start]] -- Caso base: caminho de uma cidade para si mesma
+    | otherwise =
+        let paths = bfsPaths roadMap [[start]] end [] -- Busca todos os caminhos
+            minDist = minimum (map (pathDistance roadMap) paths) -- Encontra a menor distância
+        in filter (\p -> pathDistance roadMap p == minDist) paths -- Filtra os caminhos com a menor distância
 
-
-
+-- Busca em largura para encontrar todos os caminhos
+bfsPaths :: RoadMap -> [Path] -> City -> [Path] -> [Path]
+bfsPaths _ [] _ result = result
+bfsPaths roadMap (path:queue) goal result
+    | currentCity == goal = bfsPaths roadMap queue goal (path : result)
+    | otherwise =
+        let nextCities = [next | (next, _) <- adjacent roadMap currentCity, next `notElem` path]
+            newPaths = [path ++ [next] | next <- nextCities]
+        in bfsPaths roadMap (queue ++ newPaths) goal result
+  where
+    currentCity = last path
 
 
 
@@ -179,3 +196,12 @@ rm7 = [("A", "B", 10),
         ("D", "E", 25)]
 -- Resultado esperado: False
 -- Justificação: "A", "B", e "C" estão em um componente, enquanto "D" e "E" estão em outro.
+
+gTest1 :: RoadMap
+gTest1 = [("7","6",1),("8","2",2),("6","5",2),("0","1",4),("2","5",4),("8","6",6),("2","3",7),("7","8",7),("0","7",8),("1","2",8),("3","4",9),("5","4",10),("1","7",11),("3","5",14)]
+
+gTest2 :: RoadMap
+gTest2 = [("0","1",10),("0","2",15),("0","3",20),("1","2",35),("1","3",25),("2","3",30)]
+
+gTest3 :: RoadMap -- unconnected graph
+gTest3 = [("0","1",4),("2","3",2)]
