@@ -131,11 +131,14 @@ bfsPaths roadMap (path:queue) goal result
   where
     currentCity = last path
 
+-- 9 :
+
 -- Função auxiliar para calcular todas as permutações de caminhos possiveis
 permutations :: Eq a => [a] -> [[a]]
 permutations [] = [[]]
 permutations xs = [x : ps | x <- xs, ps <- permutations (filter (/= x) xs)]
 
+-- Função principal
 travelSales :: RoadMap -> Path
 travelSales roadMap = 
     let allCities = cities roadMap
@@ -158,79 +161,6 @@ travelSales roadMap =
     in case shortestPath' [(p, d) | (p, Just d) <- validPaths] of
         Nothing -> []
         Just (sp, _) -> sp ++ [src]
-
-
-
-
-rm :: RoadMap
-rm = [("New York", "Los Angeles", 2445),
-               ("Chicago", "New York", 790),
-               ("Houston", "Los Angeles", 1374),
-               ("Chicago", "Houston", 1082),
-               ("New York", "Las Vegas", 2068)]
-
--- Exemplo de RoadMaps para testar a função isStronglyConnected
--- Exemplo 1: Grafo com arestas duplicadas
-rm1 :: RoadMap
-rm1 = [("A", "B", 10),
-        ("B", "A", 10), -- Aresta duplicada
-        ("B", "C", 20)]
--- Resultado esperado: True
--- Justificação: "A" pode alcançar "B" e "B" pode alcançar "C", então o grafo é fortemente conexo.
-
--- Exemplo 2: Grafo isolado
-rm2 :: RoadMap
-rm2 = [("A", "B", 10),
-        ("C", "D", 20)]
--- Resultado esperado: False
--- Justificação: "A" e "B" estão em um componente, enquanto "C" e "D" estão em outro.
-
--- Exemplo 3: Ciclo em apenas uma direção
-rm3 :: RoadMap
-rm3 = [("A", "B", 10),
-        ("B", "C", 20),
-        ("C", "A", 30),
-        ("D", "E", 40)]
--- Resultado esperado: False
--- Justificação: O ciclo "A", "B", "C" não conecta com "D" e "E".
-
--- Exemplo 4: Grafo com várias conexões
-rm4 :: RoadMap
-rm4 = [("A", "B", 10),
-        ("A", "C", 15),
-        ("C", "B", 5),
-        ("D", "E", 10)]
--- Resultado esperado: False
--- Justificação: "A", "B", e "C" estão em um componente, enquanto "D" e "E" estão em outro.
-
--- Exemplo 5: Grafo com uma cidade conectada a si mesma
-rm5 :: RoadMap
-rm5 = [("A", "A", 0)]
--- Resultado esperado: True
--- Justificação: "A" é a única cidade e está conectada a si mesma.
-
--- Exemplo 6: Grafo com cidade não conectada
-rm6 :: RoadMap
-rm6 = [("A", "B", 10),
-        ("C", "D", 20)]
--- Resultado esperado: False
--- Justificação: "A" e "B" estão conectadas, mas "C" e "D" estão em um componente separado.
-
--- Exemplo 7: Cidade conectada a várias outras
-rm7 :: RoadMap
-rm7 = [("A", "B", 10),
-        ("A", "C", 15),
-        ("B", "C", 20),
-        ("D", "E", 25)]
--- Resultado esperado: False
--- Justificação: "A", "B", e "C" estão em um componente, enquanto "D" e "E" estão em outro.
-
-rm8 :: RoadMap
-rm8 = [("New York", "Los Angeles", 2445),
-      ("Chicago", "New York", 790),
-      ("Houston", "Los Angeles", 1374),
-      ("Chicago", "Houston", 1082),
-      ("New York", "Las Vegas", 2068)]
 
 gTest1 :: RoadMap
 gTest1 = [("7","6",1),("8","2",2),("6","5",2),("0","1",4),("2","5",4),("8","6",6),("2","3",7),("7","8",7),("0","7",8),("1","2",8),("3","4",9),("5","4",10),("1","7",11),("3","5",14)]
