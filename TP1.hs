@@ -131,7 +131,7 @@ bfsPaths roadMap (path:queue) goal result
   where
     currentCity = last path
 
--- 9 :
+-- 9:
 
 -- Função auxiliar para calcular todas as permutações de caminhos possiveis
 permutations :: Eq a => [a] -> [[a]]
