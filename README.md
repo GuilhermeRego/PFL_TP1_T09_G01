@@ -1,10 +1,10 @@
 ## Group Member Identification
 
 - **Gabriel da Quinta Braga (up202207784)** - 50%
-  - **Contributions**: 
+  - **Responsible for**: areAdjacent, adjacent, rome, travelSales
 
 - **Guilherme Silveira Rego (up202207041)** - 50%
-  - **Contributions**: 
+  - **Responsible for**: cities, distance, pathDistance, isStronglyConnected, shortestPath
 
 
 ## Implementation of the `shortestPath` Function
