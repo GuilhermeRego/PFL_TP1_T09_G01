@@ -131,6 +131,34 @@ bfsPaths roadMap (path:queue) goal result
   where
     currentCity = last path
 
+-- Função auxiliar para calcular todas as permutações de caminhos possiveis
+permutations :: Eq a => [a] -> [[a]]
+permutations [] = [[]]
+permutations xs = [x : ps | x <- xs, ps <- permutations (filter (/= x) xs)]
+
+travelSales :: RoadMap -> Path
+travelSales roadMap = 
+    let allCities = cities roadMap
+        src = head allCities
+        otherCities = tail allCities
+
+        validPaths = [(p, d) | path <- permutations otherCities,
+                       let p = src : path,
+                       let d = pathDistance roadMap p,
+                       d /= Nothing,
+                       areAdjacent roadMap (last p) src]
+
+
+        shortestPath' :: [(Path, Distance)] -> Maybe (Path, Distance) -- Esta solução só necessita retornar um unico "shortest path" mesmo que existam vários
+        shortestPath' [] = Nothing
+        shortestPath' paths = Just $ foldl1 minDistance paths
+            where minDistance (p1, d1) (p2, d2) = if d1 < d2 then (p1, d1) else (p2, d2)
+    
+
+    in case shortestPath' [(p, d) | (p, Just d) <- validPaths] of
+        Nothing -> []
+        Just (sp, _) -> sp ++ [src]
+
 
 
 
@@ -196,6 +224,13 @@ rm7 = [("A", "B", 10),
         ("D", "E", 25)]
 -- Resultado esperado: False
 -- Justificação: "A", "B", e "C" estão em um componente, enquanto "D" e "E" estão em outro.
+
+rm8 :: RoadMap
+rm8 = [("New York", "Los Angeles", 2445),
+      ("Chicago", "New York", 790),
+      ("Houston", "Los Angeles", 1374),
+      ("Chicago", "Houston", 1082),
+      ("New York", "Las Vegas", 2068)]
 
 gTest1 :: RoadMap
 gTest1 = [("7","6",1),("8","2",2),("6","5",2),("0","1",4),("2","5",4),("8","6",6),("2","3",7),("7","8",7),("0","7",8),("1","2",8),("3","4",9),("5","4",10),("1","7",11),("3","5",14)]
