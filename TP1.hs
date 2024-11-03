@@ -133,34 +133,39 @@ bfsPaths roadMap (path:queue) goal result
 
 -- 9:
 
--- Função auxiliar para calcular todas as permutações de caminhos possiveis
+-- Função auxiliar para calcular todas as permutações de caminhos possíveis
+-- A função `permutations` recebe uma lista de elementos do tipo `a` e retorna uma lista de listas, 
+-- onde cada lista interna representa uma permutação dos elementos da lista de entrada.
+-- Neste caso é utilizada par acalcular todas as combinações de caminhos possiveis
 permutations :: Eq a => [a] -> [[a]]
 permutations [] = [[]]
 permutations xs = [x : ps | x <- xs, ps <- permutations (filter (/= x) xs)]
 
--- Função principal
+-- Função principal que determina o caminho mais curto para um vendedor
+-- A função `travelSales` recebe um mapa road map e calcula o caminho mais curto 
+-- que passa por todas as cidades e acaba na mesma que começou, e retorna esse caminho
 travelSales :: RoadMap -> Path
 travelSales roadMap = 
     let allCities = cities roadMap
         src = head allCities
         otherCities = tail allCities
 
+        -- Gera uma lista de caminhos válidos e suas respectivas distâncias
         validPaths = [(p, d) | path <- permutations otherCities,
                        let p = src : path,
                        let d = pathDistance roadMap p,
                        d /= Nothing,
                        areAdjacent roadMap (last p) src]
 
-
-        shortestPath' :: [(Path, Distance)] -> Maybe (Path, Distance) -- Esta solução só necessita retornar um unico "shortest path" mesmo que existam vários
+        -- Função auxiliar para encontrar o caminho mais curto entre os caminhos válidos
+        shortestPath' :: [(Path, Distance)] -> Maybe (Path, Distance) -- Retorna um único caminho mais curto, mesmo que existam vários
         shortestPath' [] = Nothing
         shortestPath' paths = Just $ foldl1 minDistance paths
             where minDistance (p1, d1) (p2, d2) = if d1 < d2 then (p1, d1) else (p2, d2)
-    
 
     in case shortestPath' [(p, d) | (p, Just d) <- validPaths] of
         Nothing -> []
-        Just (sp, _) -> sp ++ [src]
+        Just (sp, _) -> sp ++ [src]    
 
 gTest1 :: RoadMap
 gTest1 = [("7","6",1),("8","2",2),("6","5",2),("0","1",4),("2","5",4),("8","6",6),("2","3",7),("7","8",7),("0","7",8),("1","2",8),("3","4",9),("5","4",10),("1","7",11),("3","5",14)]
